@@ -1,0 +1,191 @@
+
+#startButton {
+    padding: 20px 40px;
+    font-size: 23px;
+    width: auto;
+    height: auto;
+    border-radius: 20px;
+}
+#paraTi {
+    color: #ffffff;
+
+    text-shadow:
+        0 0 8px rgba(255, 255, 255, 0.9),
+        0 0 20px rgba(255, 255, 255, 0.6),
+        0 0 35px rgba(255, 255, 255, 0.3);
+
+    transition: opacity 1s ease;
+}
+.pulse-button {
+    position: absolute;
+    top: 65%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+
+    padding: 25px 65px;
+
+    background: #ff3035;
+    color: #ffffff;
+
+    border: none;
+    border-radius: 32px;
+
+    font-family: Arial, sans-serif;
+    font-size: 55px;
+    font-weight: bold;
+
+    cursor: pointer;
+
+    box-shadow:
+        0 0 35px rgba(255, 48, 53, 0.35),
+        0 0 70px rgba(255, 48, 53, 0.18);
+
+    text-shadow:
+        0 0 8px rgba(255, 255, 255, 0.9),
+        0 0 18px rgba(255, 255, 255, 0.7);
+
+    transition:
+        transform 0.3s ease,
+        box-shadow 0.3s ease,
+        opacity 0.8s ease;
+
+    z-index: 10;
+
+    animation: heartbeat 2s infinite ease-in-out;
+}
+
+/* AL PRESIONAR */
+.pulse-button:active {
+    transform: translate(-50%, -50%) scale(0.95);
+}
+
+
+* {/*todas las cosas*/
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background: radial-gradient(
+        circle,
+        #250512 0%,
+        #10020a 55%,
+        #050105 100%
+    );
+
+    overflow: hidden;
+}
+
+/* Fondo animado */
+.background {
+    position: absolute;
+    inset: 0;
+
+    background:
+        radial-gradient(
+            ellipse at center,
+            rgba(187, 17, 96, 0.45),
+            rgba(45, 15, 75, 0.2) 40%,
+            #050407 75%
+        );
+
+    animation: breathing 3s ease-in-out infinite;
+}
+
+/* Contenido */
+.content {
+    position: center;
+    z-index: 1;
+
+    height: 100vh;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    text-align: center;
+}
+
+.content h1 {
+    font-size: 3.5rem;
+    letter-spacing: 3px;
+}
+
+.content p {
+    margin-top: 15px;
+    color: #aaa0b9;
+}
+
+/* Respiración */
+@keyframes breathing {
+    0%, 100% {
+        transform: scale(1);
+        opacity: 0.55;
+    }
+
+    10% {
+        transform: scale(1.2);
+        opacity: 1;
+    }
+}
+/* particulas */
+#particles {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+    pointer-events: none;
+}
+
+/* Contenido por encima de las partículas */
+.content {
+    position: relative;
+    z-index: 2;
+}
+#paraTi {
+    transition: opacity 0.8s ease,
+                transform 0.3s ease;
+}
+
+#paraTi.hide {
+    opacity: 0;
+    transform: translateY(-20px);
+    pointer-events: none;
+}
+
+/* formato para mobil alv */
+
+
+html, body {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    overscroll-behavior: none;
+    touch-action: none;
+}
+
+#particles {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 1;
+}
+
+#startButton {
+    max-width: 85vw;
+    font-size: clamp(16px, 5vw, 23px);
+    padding: 15px 28px;
+}
+
+.pulse-button {
+    max-width: 90vw;
+    font-size: clamp(25px, 9vw, 55px);
+    padding: 18px 35px;
+}
