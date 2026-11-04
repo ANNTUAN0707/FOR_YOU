@@ -1,3 +1,4 @@
+
 console.log("Experiencia iniciada - Navegación manual");
 
 // ==========================================
@@ -21,7 +22,8 @@ let currentScene = "";
 
 let isMobile = window.innerWidth <= 768;
 
-let maxParticles = isMobile ? 420 : 900;
+// Aumentamos ligeramente la cantidad para mayor definición con partículas más pequeñas
+let maxParticles = isMobile ? 550 : 1200;
 let floatingAmount = isMobile ? 60 : 120;
 let totalParticles = maxParticles + floatingAmount;
 
@@ -64,34 +66,24 @@ let particlesReady = false;
 // ==========================================
 
 function newParticle(x, y) {
-
     return {
         x,
         y,
-
         originX: x,
         originY: y,
-
         targetX: null,
         targetY: null,
-
         isFloating: false,
-
-        size: Math.random() * 1.5 + 0.5,
-
+        // Partículas iniciales más pequeñas (0.3 a 1.2)
+        size: Math.random() * 0.9 + 0.3,
         speedX: (Math.random() - 0.5) * 0.15,
         speedY: (Math.random() - 0.5) * 0.15,
-
         floatX: Math.random() * 0.5 + 0.2,
         floatY: Math.random() * 0.5 + 0.2,
-
         phase: Math.random() * Math.PI * 2,
-
         driftX: (Math.random() - 0.5) * 0.5,
         driftY: (Math.random() - 0.5) * 0.5,
-
         driftPhase: Math.random() * Math.PI * 2,
-
         opacity: Math.random() * 0.6 + 0.4
     };
 }
@@ -99,11 +91,8 @@ function newParticle(x, y) {
 
 // CREAR PARTÍCULAS INICIALES
 function createParticles() {
-
     particles = [];
-
     for (let i = 0; i < totalParticles; i++) {
-
         particles.push(
             newParticle(
                 Math.random() * width,
@@ -119,7 +108,6 @@ function createParticles() {
 // ==========================================
 
 function createTextTargets(message) {
-
     const offscreen = document.createElement("canvas");
     const offCtx = offscreen.getContext("2d");
 
@@ -138,7 +126,6 @@ function createTextTargets(message) {
         offCtx.measureText(message).width > width * 0.88 &&
         fontSize > 16
     ) {
-
         fontSize -= 2;
         offCtx.font = `bold ${fontSize}px Arial`;
     }
@@ -159,14 +146,12 @@ function createTextTargets(message) {
     );
 
     const points = [];
-    const step = isMobile ? 5 : 4;
+    // Reducimos el paso (step) para capturar más puntos y mayor definición
+    const step = isMobile ? 4 : 3;
 
     for (let y = 0; y < height; y += step) {
-
         for (let x = 0; x < width; x += step) {
-
             const index = (y * width + x) * 4;
-
             if (imageData.data[index + 3] > 100) {
                 points.push({ x, y });
             }
@@ -189,7 +174,6 @@ function createTextTargets(message) {
 // ==========================================
 
 function createHeartTargets() {
-
     const points = [];
 
     const heartWidth = isMobile
@@ -197,19 +181,13 @@ function createHeartTargets() {
         : Math.min(width * 0.48, height * 0.65);
 
     const scale = heartWidth / 32;
-
     const heartSizes = [1, 0.78, 0.56, 0.34];
-
-    const pointsPerHeart = isMobile ? 120 : 180;
+    const pointsPerHeart = isMobile ? 150 : 220;
 
     heartSizes.forEach(size => {
-
         for (let i = 0; i < pointsPerHeart; i++) {
-
             const t = (i / pointsPerHeart) * Math.PI * 2;
-
             const x = 16 * Math.pow(Math.sin(t), 3);
-
             const y =
                 13 * Math.cos(t) -
                 5 * Math.cos(2 * t) -
@@ -217,11 +195,8 @@ function createHeartTargets() {
                 Math.cos(4 * t);
 
             points.push({
-
                 x: width / 2 + x * scale * size,
-
                 y: height / 2 - y * scale * size
-
             });
         }
     });
@@ -235,29 +210,21 @@ function createHeartTargets() {
 // ==========================================
 
 function applyTargets(targets) {
-
     particles.forEach((p, i) => {
-
         if (targets[i]) {
-
             p.targetX = targets[i].x;
             p.targetY = targets[i].y;
-
             p.isFloating = false;
-
-            p.size = Math.random() * 1.5 + 1.2;
-            p.opacity = Math.random() * 0.25 + 0.75;
-
+            // Tamaño más pequeño al formar texto/corazón para que se distinga mejor (0.8 a 1.4)
+            p.size = Math.random() * 0.6 + 0.8;
+            p.opacity = Math.random() * 0.2 + 0.8;
         } else {
-
             p.targetX = null;
             p.targetY = null;
-
             p.isFloating = true;
-
+            p.size = Math.random() * 0.8 + 0.4;
             p.driftX = (Math.random() - 0.5) * 0.7;
             p.driftY = (Math.random() - 0.5) * 0.7;
-
         }
     });
 }
@@ -268,26 +235,20 @@ function applyTargets(targets) {
 // ==========================================
 
 function showText(message) {
-
     currentScene = message;
-
+    wordFormed = true;
     const targets = createTextTargets(message);
-
     applyTargets(targets);
-
     console.log("Mostrando:", message);
 }
 
 
 // CORAZÓN FINAL
 function showHeart() {
-
     currentScene = "heart";
-
+    wordFormed = true;
     const targets = createHeartTargets();
-
     applyTargets(targets);
-
     console.log("Corazón formado ❤️");
 }
 
@@ -297,48 +258,34 @@ function showHeart() {
 // ==========================================
 
 function waitForParticles() {
-
     return new Promise(resolve => {
-
         let stableFrames = 0;
 
         function check() {
-
             const movingParticles = particles.filter(p => {
-
                 if (p.isFloating || p.targetX === null) {
                     return false;
                 }
-
                 const dx = p.targetX - p.x;
                 const dy = p.targetY - p.y;
-
                 const distance = Math.sqrt(dx * dx + dy * dy);
-
                 return distance > 1.5;
             });
 
             if (movingParticles.length === 0) {
-
                 stableFrames++;
-
-                // CONFIRMAR 8 FRAMES ESTABLES
                 if (stableFrames >= 8) {
                     resolve();
                     return;
                 }
-
             } else {
-
                 stableFrames = 0;
-
             }
 
             requestAnimationFrame(check);
         }
 
         check();
-
     });
 }
 
@@ -348,21 +295,13 @@ function waitForParticles() {
 // ==========================================
 
 async function showCurrentMessage() {
-
     particlesReady = false;
-
     showText(messages[currentMessageIndex]);
 
-    // ESPERAR A QUE TERMINE LA FORMACIÓN
     await waitForParticles();
-
     particlesReady = true;
 
-    console.log(
-        "Mensaje listo:",
-        messages[currentMessageIndex]
-    );
-
+    console.log("Mensaje listo:", messages[currentMessageIndex]);
     console.log("Esperando toque en pantalla...");
 }
 
@@ -372,30 +311,23 @@ async function showCurrentMessage() {
 // ==========================================
 
 function startSequence() {
-
     if (sequenceStarted) return;
 
     sequenceStarted = true;
     wordFormed = true;
 
-    // OCULTAR TEXTO PARA TI
     const paraTi = document.getElementById("paraTi");
-
     if (paraTi) {
         paraTi.classList.add("hide");
     }
 
-    // OCULTAR BOTÓN
     const button = document.getElementById("startButton");
-
     if (button) {
         button.style.opacity = "0";
         button.style.pointerEvents = "none";
     }
 
     currentMessageIndex = 0;
-
-    // PRIMER MENSAJE
     showCurrentMessage();
 }
 
@@ -405,76 +337,45 @@ function startSequence() {
 // ==========================================
 
 function nextScene() {
-
-    // EVITAR TOQUES PREMATUROS
     if (!sequenceStarted || !particlesReady) return;
-
-    // BLOQUEAR TOQUES REPETIDOS
     particlesReady = false;
 
     currentMessageIndex++;
 
-    // SI TERMINARON LOS MENSAJES
     if (currentMessageIndex >= messages.length) {
-
         showHeart();
-
         console.log("Experiencia finalizada ❤️");
-
         return;
     }
 
-    // SIGUIENTE MENSAJE
     showCurrentMessage();
 }
 
 
 // ==========================================
-// DETECTAR TOQUES EN PANTALLA
+// DETECTAR TOQUES EN PANTALLA Y MOUSE
 // ==========================================
 
 window.addEventListener("pointerdown", (event) => {
-
-    // NO CONTAR EL BOTÓN INICIAL
     if (event.target.closest("#startButton")) return;
-
-    // NO AVANZAR ANTES DE INICIAR
-    if (!sequenceStarted) return;
-
-    // NO AVANZAR SI LAS PARTÍCULAS SIGUEN MOVIÉNDOSE
-    if (!particlesReady) return;
-
-    // AVANZAR
+    if (!sequenceStarted || !particlesReady) return;
     nextScene();
-
 });
 
-
-// ==========================================
-// MOVIMIENTO DEL MOUSE
-// ==========================================
-
 window.addEventListener("pointermove", (event) => {
-
     const rect = canvas.getBoundingClientRect();
-
     mouse.x = event.clientX - rect.left;
     mouse.y = event.clientY - rect.top;
-
 });
 
 window.addEventListener("pointerup", () => {
-
     mouse.x = null;
     mouse.y = null;
-
 });
 
 window.addEventListener("pointerleave", () => {
-
     mouse.x = null;
     mouse.y = null;
-
 });
 
 
@@ -483,19 +384,14 @@ window.addEventListener("pointerleave", () => {
 // ==========================================
 
 function repelMouse(p) {
-
     if (mouse.x === null || mouse.y === null) return;
 
     const dx = p.x - mouse.x;
     const dy = p.y - mouse.y;
-
     const distance = Math.sqrt(dx * dx + dy * dy);
 
     if (distance < mouse.radius && distance > 0) {
-
-        const force =
-            (mouse.radius - distance) / mouse.radius;
-
+        const force = (mouse.radius - distance) / mouse.radius;
         const strength = isMobile ? 3 : 5;
 
         p.x += (dx / distance) * force * strength;
@@ -509,11 +405,8 @@ function repelMouse(p) {
 // ==========================================
 
 const startButton = document.getElementById("startButton");
-
 if (startButton) {
-
     startButton.addEventListener("click", startSequence);
-
 }
 
 
@@ -522,61 +415,32 @@ if (startButton) {
 // ==========================================
 
 function animate() {
-
     ctx.clearRect(0, 0, width, height);
-
     const time = Date.now() * 0.001;
 
     particles.forEach(p => {
-
-        // PARTÍCULAS DEL TEXTO O CORAZÓN
         if (wordFormed && !p.isFloating) {
-
             p.x += (p.targetX - p.x) * 0.045;
             p.y += (p.targetY - p.y) * 0.045;
-
-        }
-
-        // PARTÍCULAS FLOTANTES
-        else if (wordFormed && p.isFloating) {
-
-            p.x += p.driftX +
-                Math.sin(time + p.driftPhase) * 0.3;
-
-            p.y += p.driftY +
-                Math.cos(time + p.driftPhase) * 0.3;
+        } else if (wordFormed && p.isFloating) {
+            p.x += p.driftX + Math.sin(time + p.driftPhase) * 0.3;
+            p.y += p.driftY + Math.cos(time + p.driftPhase) * 0.3;
 
             p.driftX += (Math.random() - 0.5) * 0.015;
             p.driftY += (Math.random() - 0.5) * 0.015;
 
-            p.driftX = Math.max(
-                -0.7,
-                Math.min(0.7, p.driftX)
-            );
-
-            p.driftY = Math.max(
-                -0.7,
-                Math.min(0.7, p.driftY)
-            );
+            p.driftX = Math.max(-0.7, Math.min(0.7, p.driftX));
+            p.driftY = Math.max(-0.7, Math.min(0.7, p.driftY));
 
             repelMouse(p);
 
             if (p.x < 0) p.x = width;
             if (p.x > width) p.x = 0;
-
             if (p.y < 0) p.y = height;
             if (p.y > height) p.y = 0;
-
-        }
-
-        // MOVIMIENTO INICIAL
-        else if (!wordFormed) {
-
-            p.x += p.speedX +
-                Math.sin(time + p.phase) * p.floatX * 0.15;
-
-            p.y += p.speedY +
-                Math.cos(time + p.phase) * p.floatY * 0.15;
+        } else if (!wordFormed) {
+            p.x += p.speedX + Math.sin(time + p.phase) * p.floatX * 0.15;
+            p.y += p.speedY + Math.cos(time + p.phase) * p.floatY * 0.15;
 
             repelMouse(p);
 
@@ -585,49 +449,27 @@ function animate() {
 
             if (p.x < 0 || p.x > width) p.speedX *= -1;
             if (p.y < 0 || p.y > height) p.speedY *= -1;
-
         }
 
-        // DIBUJAR PARTÍCULAS
         ctx.beginPath();
+        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
 
-        ctx.arc(
-            p.x,
-            p.y,
-            p.size,
-            0,
-            Math.PI * 2
-        );
-
-        // COLORES Y BRILLO
         if (wordFormed && !p.isFloating) {
-
-            ctx.fillStyle =
-                `rgba(255, 235, 240, ${p.opacity})`;
-
-            ctx.shadowBlur = isMobile ? 10 : 20;
+            ctx.fillStyle = `rgba(255, 235, 240, ${p.opacity})`;
+            // Reducimos un poco el brillo (shadowBlur) para que los puntos no se difuminen demasiado entre sí
+            ctx.shadowBlur = isMobile ? 6 : 10;
             ctx.shadowColor = wordColor;
-
         } else if (wordFormed && p.isFloating) {
-
-            ctx.fillStyle =
-                `rgba(255, 90, 120, ${p.opacity})`;
-
-            ctx.shadowBlur = isMobile ? 6 : 12;
+            ctx.fillStyle = `rgba(255, 90, 120, ${p.opacity})`;
+            ctx.shadowBlur = isMobile ? 4 : 8;
             ctx.shadowColor = wordColor;
-
         } else {
-
-            ctx.fillStyle =
-                `rgba(255, 50, 70, ${p.opacity})`;
-
-            ctx.shadowBlur = isMobile ? 3 : 5;
+            ctx.fillStyle = `rgba(255, 50, 70, ${p.opacity})`;
+            ctx.shadowBlur = isMobile ? 2 : 4;
             ctx.shadowColor = particleColor;
-
         }
 
         ctx.fill();
-
     });
 
     requestAnimationFrame(animate);
@@ -639,10 +481,9 @@ function animate() {
 // ==========================================
 
 function resizeCanvas() {
-
     isMobile = window.innerWidth <= 768;
 
-    maxParticles = isMobile ? 420 : 900;
+    maxParticles = isMobile ? 550 : 1200;
     floatingAmount = isMobile ? 60 : 120;
     totalParticles = maxParticles + floatingAmount;
 
@@ -662,27 +503,20 @@ function resizeCanvas() {
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
     if (sequenceStarted) {
-
         particlesReady = false;
 
         if (currentScene === "heart") {
-
             showHeart();
-
         } else {
-
             showText(currentScene);
-
-            waitForParticles().then(() => {
-                particlesReady = true;
-            });
-
         }
 
+        waitForParticles().then(() => {
+            particlesReady = true;
+        });
+
     } else {
-
         createParticles();
-
     }
 }
 
@@ -697,3 +531,4 @@ window.addEventListener("resize", resizeCanvas);
 
 resizeCanvas();
 animate();
+
